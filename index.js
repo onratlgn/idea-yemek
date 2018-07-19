@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
+var port = process.env.PORT || 3000;
+
 
 const api = require('./routes/api');
 
@@ -41,4 +43,4 @@ app.use('/api', api);
 
 
 
-app.listen(3000, () => console.log('server open'))
+app.listen(port, () => console.log('server open'))
