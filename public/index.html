@@ -29,7 +29,7 @@
     var obj = {username : username , food: food, drink:drink};
 
     var xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "http://localhost:3000/api/yenisiparis", true);
+    xhttp.open("POST", "https://idea-yemek.herokuapp.com/api/yenisiparis", true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send(JSON.stringify(obj));
     var response = JSON.parse(xhttp.responseText);
