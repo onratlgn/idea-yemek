@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Yemek Sepeti</title>
+</head>
+<body>
+<center>
+<h2>Ne yiyon!</h2>
+<div>Ad Soyad</div>
+<input type=" text" id = "username">
+<div>Yemek</div>
+<input type=" text" id = "food">
+<div>İçecek</div>
+<input type=" text" id = "drink">
+<p id="test" ></p>
+<button onclick= "addSiparis()"> Siparişi Onayla </button>
+</center>
+
+<script>
+
+ function addSiparis(){
+    
+    var username = document.getElementById("username").value;
+    var food = document.getElementById("food").value;
+    var drink = document.getElementById("drink").value;
+
+    document.getElementById("test").innerHTML =  username+"\n  yemek olarak " +food+" \n icecek olarak "+drink +" ister";
+
+    var obj = {username : username , food: food, drink:drink};
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("POST", "http://localhost:3000/api/yenisiparis", true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send(JSON.stringify(obj));
+    var response = JSON.parse(xhttp.responseText);
+ }
+
+
+</script>
+
+
+
+</body>
+</html>
