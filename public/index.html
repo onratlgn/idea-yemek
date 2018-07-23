@@ -1,44 +1,151 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B"
+    crossorigin="anonymous">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link href="style.css" rel="stylesheet">
   <title>Yemek Sepeti</title>
 </head>
-<body>
-<center>
-<h2>Ne yiyon!</h2>
-<div>Ad Soyad</div>
-<input type=" text" id = "username">
-<div>Yemek</div>
-<input type=" text" id = "food">
-<div>İçecek</div>
-<input type=" text" id = "drink">
-<p id="test" ></p>
-<button onclick= "addSiparis()"> Siparişi Onayla </button>
-</center>
-
-<script>
-
- function addSiparis(){
-    
-    var username = document.getElementById("username").value;
-    var food = document.getElementById("food").value;
-    var drink = document.getElementById("drink").value;
-
-    document.getElementById("test").innerHTML =  username+"\n  yemek olarak " +food+" \n icecek olarak "+drink +" ister";
-
-    var obj = {username : username , food: food, drink:drink};
-
-    var xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "https://idea-yemek.herokuapp.com/api/yenisiparis", true);
-    xhttp.setRequestHeader("Content-type", "application/json");
-    xhttp.send(JSON.stringify(obj));
-    var response = JSON.parse(xhttp.responseText);
- }
 
 
-</script>
+<body class="text-center">
+  <div class="form-signin" id="loginScreen" style="display: inline">
+    <img class="mb-4" src="menu.png" alt="" width="72" height="72">
+    <h1 class="h3 mb-3 font-weight-normal">Ne yiyon!</h1>
+    <div>Ad Soyad</div>
+    <label for="text" class="sr-only">username</label>
+    <input type=" text" class="form-control" id="username" required autofocus>
+    <div>Yemek</div>
+    <input type=" text" class="form-control" id="food" required autofocus>
+    <div>İçecek</div>
+    <input type=" text" class="form-control" id="drink" required autofocus>
+    <p id="test"></p>
+    <button class="btn btn-lg btn-primary btn-block" onclick="addSiparis()"> Siparişi Onayla </button>
 
+    <button class="btn btn-lg btn-primary btn-block" onclick="getLastItems()"> Siparişler </button>
+    <p class="mt-5 mb-3 text-muted">&copy; 2017-2018 by dogaonr</p>
+  </div>
+
+  <div class="form-signin" id="recievedScreen" style="display: none">
+    <img class="mb-4" src="menu.png" alt="" width="72" height="72">
+
+    <h1 class="h3 mb-3 font-weight-normal"> Ne yiyon! </h1>
+    <h2 class="h3 mb-3 font-weight-normal"> Siparişiniz alınmıştır. Afiyet olsun:) </h2>
+
+    <button class="btn btn-lg btn-primary btn-block" onclick="getLastItems()"> Siparişler </button>
+
+    <p class="mt-5 mb-3 text-muted">&copy; 2017-2018 by dogaonr @ Ne yiyon!</p>
+  </div>
+  <p></p>
+  <ul class="form-signin" id="foodpoolScreen" class="list-group" style="display: none">
+
+    <img class="mb-4" src="menu.png" alt="" width="72" height="72">
+    <h1 class="h3 mb-3 font-weight-normal"> Ne yiyon! </h1>
+    <table class="table" id="foodpool">
+
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">ad soyad</th>
+          <th scope="col">yemek</th>
+          <th scope="col">içecek</th>
+        </tr>
+      </thead>
+      <tbody>
+
+
+      </tbody>
+    </table>
+
+    <button class="btn btn-lg btn-primary btn-block" onclick="goBack()"> Geri </button>
+    <p class="mt-5 mb-3 text-muted">&copy; 2017-2018 by dogaonr</p>
+  </ul>
+
+  <script>
+
+
+    function addSiparis() {
+
+      var username = document.getElementById("username").value;
+      var food = document.getElementById("food").value;
+      var drink = document.getElementById("drink").value;
+
+      document.getElementById("test").innerHTML = username + "\n  yemek olarak " + food + " \n icecek olarak " + drink + " ister";
+
+      var obj = { username: username, food: food, drink: drink };
+      console.log(obj);
+      
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("POST", "https://idea-yemek.herokuapp.com/api/yenisiparis", true);
+      xhttp.setRequestHeader("Content-type", "application/json");
+      xhttp.send(JSON.stringify(obj));
+     // var response = JSON.parse(xhttp.responseText);
+      document.getElementById("loginScreen").style.display = "none";
+
+      document.getElementById("recievedScreen").style.display = "inline";
+
+    }
+
+    function getLastItems() {
+      obje = { food: "kofte" };
+
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("POST", "https://idea-yemek.herokuapp.com/api/getToday", true);
+      xhttp.setRequestHeader("Content-type", "application/json");
+      xhttp.send(JSON.stringify(obje));
+
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          var response = JSON.parse(xhttp.responseText);
+          var foodpool = document.getElementById("foodpool");
+          foodpool.innerHTML="<thead> <tr> <th scope=\"col\">#</th> <th scope=\"col\">ad soyad</th> <th scope=\"col\">yemek</th> <th scope=\"col\">içecek</th> </tr> </thead> <tbody> </tbody>";
+
+
+         for (var i = 0; i < response.siparis.length; i++) {
+
+            var row = foodpool.insertRow(1);
+
+            // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+            var index = row.insertCell(0);
+            var name = row.insertCell(1);
+            var food = row.insertCell(2);
+            var drink = row.insertCell(3);
+            index.innerHTML = "<b>" +  (response.siparis.length - i) + "</b>";
+            name.innerHTML = response.siparis[i].username;
+            food.innerHTML = response.siparis[i].food;
+            drink.innerHTML = response.siparis[i].drink;
+
+          }
+          
+      document.getElementById("recievedScreen").style.display = "none";
+      
+      document.getElementById("loginScreen").style.display = "none";
+      document.getElementById("foodpoolScreen").style.display = "inline";
+        }
+      };
+    }
+    function goBack()
+{
+
+      document.getElementById("recievedScreen").style.display = "none";
+      
+      document.getElementById("loginScreen").style.display = "inline";
+      document.getElementById("foodpoolScreen").style.display = "none";
+}
+
+  </script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em"
+    crossorigin="anonymous"></script>
 
 
 </body>
+
 </html>
